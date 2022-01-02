@@ -16,7 +16,10 @@ def findElement(by, value): # Short hand to find a element and wait 5 seconds fo
     return WebDriverWait(driver, 30).until(EC.presence_of_element_located((by, value)))
 
 # Finds the configuration file for this
-location = __file__[: __file__.rindex("/") + 1]
+try:
+    location = __file__[: __file__.rindex("/") + 1]
+except:
+    location = __file__[:__file__.rindex("\\") + 1]
 choice = "n"
 if os.path.isfile(f"{location}.config.json"):
     choice = input("Previous config found press enter to use and enter n and then press enter to use a new config")
