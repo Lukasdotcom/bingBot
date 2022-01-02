@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 from selenium import webdriver
-from selenium.webdriver.firefox import service
-from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.common.by import By
 import time
 import json
@@ -27,12 +25,18 @@ if choice:
     username = input("Enter here the username for your microsoft account: ")
     searches = int(input("Enter the number of searches you want to do 30 is the recommendation: "))
     browser_driver = input("Enter the path to the geckodriver: ")
-    config = {"version" : version, "username" : username, "searches" : searches, "driver" : browser_driver}
+    browser = input("Enter firefox if you are using geckodriver and chrome if you are using chromedriver")
+    config = {"version" : version, "username" : username, "searches" : searches, "driver" : browser_driver, "browser": browser}
     with open(f"{location}.config.json", "w") as f:
         json.dump(config, f)
 else:
     with open(f"{location}.config.json") as f:
         config = json.load(f)
+# Checks which browser to run it on.
+if config["browser"] == "firefox":
+    from selenium.webdriver.firefox.service import Service
+else:
+    from selenium.webdriver.chrome.service import Service
 try:
     browser_driver = Service(config["driver"])
 except WebDriverException:
@@ -40,7 +44,11 @@ except WebDriverException:
 print("Reminder to keep the firefox window open that will pop up after you enter the password.")
 print("Enter your microsoft password.")
 enterPassword = getpass.getpass()
-driver = webdriver.Firefox(service=browser_driver)
+# Checks which browser to start
+if config["browser"] == "firefox":
+    driver = webdriver.Firefox(service=browser_driver)
+else:
+    driver = webdriver.Chrome(service=browser_driver)
 time.sleep(2)
 driver.get("https://login.live.com/login.srf?id=264960")
 
