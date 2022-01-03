@@ -15,6 +15,28 @@ version = "v1.0"
 def findElement(by, value): # Short hand to find a element and wait 5 seconds for it to appear
     return WebDriverWait(driver, 30).until(EC.presence_of_element_located((by, value)))
 
+def configUpdate(previousConfig): # Used to update the config
+    try:
+        username = previousConfig["username"]
+    except KeyError:
+        username = input("Enter here the username for your microsoft account: ")
+    try:
+        searches = previousConfig["searches"]
+    except KeyError:
+        searches = int(input("Enter the number of searches you want to do 30 is the recommendation: "))
+    try:
+        browser_driver = previousConfig["driver"]
+    except KeyError:
+        browser_driver = input("Enter the path to the geckodriver: ")
+    try:
+        browser = previousConfig["browser"]
+    except KeyError:
+        browser = input("Enter firefox if you are using geckodriver and chrome if you are using chromedriver")
+    config = {"version" : version, "username" : username, "searches" : searches, "driver" : browser_driver, "browser": browser}
+    with open(f"{location}.config.json", "w") as f:
+        json.dump(config, f)
+    return config
+
 # Finds the configuration file for this
 try:
     location = __file__[: __file__.rindex("/") + 1]
@@ -25,16 +47,13 @@ if os.path.isfile(f"{location}.config.json"):
     choice = input("Previous config found press enter to use and enter n and then press enter to use a new config")
 # Used to check if new config is needed
 if choice:
-    username = input("Enter here the username for your microsoft account: ")
-    searches = int(input("Enter the number of searches you want to do 30 is the recommendation: "))
-    browser_driver = input("Enter the path to the geckodriver: ")
-    browser = input("Enter firefox if you are using geckodriver and chrome if you are using chromedriver")
-    config = {"version" : version, "username" : username, "searches" : searches, "driver" : browser_driver, "browser": browser}
-    with open(f"{location}.config.json", "w") as f:
-        json.dump(config, f)
+    config = configUpdate({})
 else:
     with open(f"{location}.config.json") as f:
         config = json.load(f)
+    if version != config["version"]:
+        print("Config has a different version.")
+        config = configUpdate(config)
 # Checks which browser to run it on.
 if config["browser"] == "firefox":
     from selenium.webdriver.firefox.service import Service
