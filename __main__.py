@@ -18,7 +18,7 @@ def findElement(by, value): # Short hand to find a element and wait 5 seconds fo
 def configUpdate(previousConfig): # Used to update the config
     browser_driver = input("Enter the path to the geckodriver: ")
     browser = input("Enter firefox if you are using geckodriver and chrome if you are using chromedriver")
-    config = {"version" : version, "driver" : browser_driver, "browser": browser}
+    config = {"version" : version, "driver" : browser_driver, "browser": browser, "users" : []}
     with open(f"{location}.config.json", "w") as f:
         json.dump(config, f)
     return config
