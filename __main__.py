@@ -16,8 +16,8 @@ def findElement(by, value): # Short hand to find a element and wait 5 seconds fo
     return WebDriverWait(driver, 30).until(EC.presence_of_element_located((by, value)))
 
 def configUpdate(previousConfig): # Used to update the config
-    browser_driver = input("Enter the path to the geckodriver: ")
-    browser = input("Enter firefox if you are using geckodriver and chrome if you are using chromedriver")
+    browser = input("Enter firefox if you are using geckodriver and chrome if you are using chromedriver: ")
+    browser_driver = input("Enter the path to the geckodriver/chromedriver: ")
     config = {"version" : version, "driver" : browser_driver, "browser": browser, "users" : []}
     with open(f"{location}.config.json", "w") as f:
         json.dump(config, f)
@@ -32,8 +32,11 @@ choice = "n"
 if os.path.isfile(f"{location}.config.json"):
     choice = print("Previous config found.")
 # Used to check if new config is needed
-with open(f"{location}.config.json") as f:
-    config = json.load(f)
+try:
+    with open(f"{location}.config.json") as f:
+        config = json.load(f)
+except:
+    config = {"version" : "notFound"}
 if version != config["version"]:
     if config["version"] == "v1.0":
         config = {
